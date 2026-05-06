@@ -1,0 +1,8 @@
+C:\Users\ACER\source\repos\proyectofinal\proyectofinal\obj\Debug\net10.0\proyectofinal.csproj.AssemblyReference.cache
+C:\Users\ACER\source\repos\proyectofinal\proyectofinal\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\ACER\source\repos\proyectofinal\proyectofinal\obj\Debug\net10.0\proyectofinal.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ACER\source\repos\proyectofinal\proyectofinal\obj\Debug\net10.0\proyectofinal.AssemblyInfoInputs.cache
+C:\Users\ACER\source\repos\proyectofinal\proyectofinal\obj\Debug\net10.0\proyectofinal.AssemblyInfo.cs
+C:\Users\ACER\source\repos\proyectofinal\proyectofinal\obj\Debug\net10.0\proyectofinal.csproj.CoreCompileInputs.cache
+C:\Users\ACER\source\repos\proyectofinal\proyectofinal\obj\Debug\net10.0\proyectofinal.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\ACER\source\repos\proyectofinal\proyectofinal\obj\Debug\net10.0\proyectofinal.MvcApplicationPartsAssemblyInfo.cache
