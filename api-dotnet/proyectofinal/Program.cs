@@ -4,24 +4,24 @@ using proyectofinal.Models;
 using StackExchange.Redis;
 using Microsoft.AspNetCore.Builder;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Configuración de SQL Server (Persistencia)
-// Asegúrate de que el nombre de la base de datos coincida con la que crearon tus compañeros
+// 1. Configuración de SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer("Server=localhost;Database=MetodosNumericos;Trusted_Connection=True;TrustServerCertificate=True;"));
+    options.UseSqlServer(
+        "Server=localhost;Database=MetodosNumericos;Trusted_Connection=True;TrustServerCertificate=True;"));
 
-// 2. Configuración de Redis (Encolado RPUSH)
-builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("localhost"));
+// 2. Configuración de Redis
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    ConnectionMultiplexer.Connect("redis:6379,abortConnect=false"));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(); // Esto genera la documentación OpenAPI que pide el Ing. Mayén
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// 3. Configurar Swagger para ver tu API en el navegador
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
