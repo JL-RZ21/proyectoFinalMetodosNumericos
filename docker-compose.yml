@@ -1,1 +1,43 @@
 version: '3.8'
+
+services:
+  redis:
+    image: redis:7
+    container_name: metodos-redis
+    ports:
+      - "6379:6379"
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: metodos-sqlserver
+    environment:
+      SA_PASSWORD: "Password123!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+  api:
+    build:
+      context: ./api-dotnet/proyectofinal/proyectofinal
+    container_name: metodos-api
+    ports:
+      - "5106:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=MetodosNumericos;User Id=sa;Password=Password123!;TrustServerCertificate=True;"
+      Redis__Connection: "redis:6379"
+    depends_on:
+      - redis
+      - sqlserver
+  worker:
+    build:
+      context:  ./worker-python
+    container_name: metodos-worker
+    depends_on:
+      - redis
+      - sqlserver
+
+volumes:
+  sqlserver_data:
