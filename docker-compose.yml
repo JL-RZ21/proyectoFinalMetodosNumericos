@@ -31,13 +31,23 @@ services:
     depends_on:
       - redis
       - sqlserver
+
   worker:
     build:
-      context:  ./worker-python
+      context: ./worker-python
     container_name: metodos-worker
     depends_on:
       - redis
       - sqlserver
+
+  frontend:
+    build:
+      context: ./frontEnd
+    container_name: metodos-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
 
 volumes:
   sqlserver_data:
