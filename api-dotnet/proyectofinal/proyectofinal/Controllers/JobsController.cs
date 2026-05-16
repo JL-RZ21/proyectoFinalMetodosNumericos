@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using proyectofinal.Data;   // Aquí buscaremos la conexión a DB
-using proyectofinal.Models; // Aquí buscaremos los modelos
-using StackExchange.Redis;  // Para el encolado RPUSH
+using proyectofinal.Data;
+using proyectofinal.Models;
+using StackExchange.Redis;
 
 namespace proyectofinal.Controllers;
 
@@ -19,31 +19,53 @@ public class JobsController : ControllerBase
         _redis = redis;
     }
 
-    // POST: api/Jobs - Aquí es donde el Frontend manda el Newton-Raphson
+    // POST: api/Jobs
     [HttpPost]
     public async Task<ActionResult<Job>> PostJob(Job nuevoJob)
     {
-        // 1. Validamos y ponemos estado inicial según el script SQL
         nuevoJob.Estado = "PENDING";
         nuevoJob.FechaCreacion = DateTime.Now;
 
-        // 2. Persistencia en SQL Server 2022 usando EF Core 9
         _context.Jobs.Add(nuevoJob);
         await _context.SaveChangesAsync();
 
-        // 3. Encolado en Redis (RPUSH) para que el Worker de Python lo lea
         var db = _redis.GetDatabase();
         await db.ListRightPushAsync("queue:jobs", nuevoJob.Id.ToString());
 
         return CreatedAtAction(nameof(GetJob), new { id = nuevoJob.Id }, nuevoJob);
     }
 
-    // GET: api/Jobs/5 - Para que el Frontend vea si ya terminó el cálculo
+    // GET: api/Jobs — historial completo
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Job>>> GetJobs()
+    {
+        var jobs = await _context.Jobs
+            .OrderByDescending(j => j.FechaCreacion)
+            .ToListAsync();
+        return Ok(jobs);
+    }
+
+    // GET: api/Jobs/5 — estado del job
     [HttpGet("{id}")]
     public async Task<ActionResult<Job>> GetJob(int id)
     {
         var job = await _context.Jobs.FindAsync(id);
         if (job == null) return NotFound();
         return job;
+    }
+
+    // GET: api/Jobs/5/iterations — iteraciones para tabla y gráfica
+    [HttpGet("{id}/iterations")]
+    public async Task<ActionResult<IEnumerable<Iteracion>>> GetIteraciones(int id)
+    {
+        var job = await _context.Jobs.FindAsync(id);
+        if (job == null) return NotFound();
+
+        var iteraciones = await _context.Iteraciones
+            .Where(i => i.JobId == id)
+            .OrderBy(i => i.NumeroIteracion)
+            .ToListAsync();
+
+        return Ok(iteraciones);
     }
 }

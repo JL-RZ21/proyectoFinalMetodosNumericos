@@ -18,20 +18,27 @@ var redisConnection = builder.Configuration["Redis:Connection"] ?? "redis:6379";
 builder.Services.AddSingleton<IConnectionMultiplexer>(
     ConnectionMultiplexer.Connect(redisConnection));
 
+// 3. CORS — permite que el frontend se conecte
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader());
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(); 
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// 3. Configurar Swagger para ver API en el navegador
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// 4. Swagger siempre activo (no solo en Development)
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+// 5. Habilitar CORS antes de los controladores
+app.UseCors("AllowAll");
+
 app.UseAuthorization();
 app.MapControllers();
 
