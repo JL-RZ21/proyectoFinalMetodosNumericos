@@ -19,4 +19,4 @@ RUN pip install redis pyodbc sympy
 
 COPY . .
 
-CMD ["python", "worker_redis.py"]
+CMD ["python", "main.py"]

@@ -1,1 +1,0 @@
-CMD ["python", "worker.py"]  build --no-cache worker
