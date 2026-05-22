@@ -15,7 +15,6 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
-      - ./sql-init:/docker-entrypoint-initdb.d
 
   api:
     build:
