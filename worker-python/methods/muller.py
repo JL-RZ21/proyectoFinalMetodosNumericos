@@ -1,23 +1,21 @@
 import sympy as sp
+import cmath
 
 
 def muller(expresion, parametros):
 
     x = sp.Symbol("x")
-
     f_expr = sp.sympify(expresion)
+    f = sp.lambdify(x, f_expr, "complex")
 
-    f = sp.lambdify(x, f_expr, "math")
-
-    x0 = float(parametros["x0"])
-    x1 = float(parametros["x1"])
-    x2 = float(parametros["x2"])
+    x0 = complex(float(parametros["x0"]))
+    x1 = complex(float(parametros["x1"]))
+    x2 = complex(float(parametros["x2"]))
 
     tolerancia = float(parametros["tolerancia"])
     max_iteraciones = int(parametros["maxIteraciones"])
 
     iteraciones = []
-
     error = None
 
     for i in range(1, max_iteraciones + 1):
@@ -39,12 +37,9 @@ def muller(expresion, parametros):
         b = a * h1 + d1
         c = fx2
 
+        # Manejo correcto de raíces complejas con cmath
         discriminante = b**2 - 4 * a * c
-
-        if discriminante < 0:
-            raise Exception("Raíz compleja detectada.")
-
-        raiz_discriminante = discriminante ** 0.5
+        raiz_discriminante = cmath.sqrt(discriminante)
 
         if abs(b + raiz_discriminante) > abs(b - raiz_discriminante):
             denominador = b + raiz_discriminante
@@ -56,34 +51,34 @@ def muller(expresion, parametros):
 
         xr = x2 - (2 * c) / denominador
 
-        if xr != 0:
+        if abs(xr) > 1e-12:
             error = abs((xr - x2) / xr) * 100
         else:
             error = abs(xr - x2)
 
         iteraciones.append({
             "numero": i,
-            "valorX": xr,
-            "error": error,
+            "valorX": str(xr),
+            "error": abs(error),
             "datos": {
-                "x0": x0,
-                "x1": x1,
-                "x2": x2,
-                "fx0": fx0,
-                "fx1": fx1,
-                "fx2": fx2,
-                "a": a,
-                "b": b,
-                "c": c,
-                "xr": xr
+                "x0": str(x0),
+                "x1": str(x1),
+                "x2": str(x2),
+                "fx0": str(fx0),
+                "fx1": str(fx1),
+                "fx2": str(fx2),
+                "a": str(a),
+                "b": str(b),
+                "c": str(c),
+                "xr": str(xr)
             }
         })
 
-        if error < tolerancia:
-            return xr, error, i, True, iteraciones
+        if abs(error) < tolerancia:
+            return str(xr), abs(error), i, True, iteraciones
 
         x0 = x1
         x1 = x2
         x2 = xr
 
-    return x2, error, max_iteraciones, False, iteraciones
+    return str(x2), abs(error), max_iteraciones, False, iteraciones

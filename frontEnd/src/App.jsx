@@ -5,7 +5,7 @@ import {
 } from "recharts";
 
 // ── CONFIG ────────────────────────────────────────────────────────────────────
-const API_BASE = "http://localhost:5106/api";
+const API_BASE = "http://localhost:5000/api";
 const POLL_INTERVAL = 5000;
 
 // ── KaTeX ─────────────────────────────────────────────────────────────────────

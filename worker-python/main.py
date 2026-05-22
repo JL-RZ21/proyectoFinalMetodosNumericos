@@ -1,17 +1,14 @@
 import json
-
 from config import REDIS_QUEUE
 from db import get_sql_connection
 from redis_client import get_redis_client
 from dispatcher import ejecutar_metodo
-
 
 redis_client = get_redis_client()
 conn = get_sql_connection()
 cursor = conn.cursor()
 
 print("Worker iniciado. Esperando jobs en Redis...")
-
 
 while True:
     job_data = redis_client.blpop(REDIS_QUEUE)
@@ -20,6 +17,18 @@ while True:
     print(f"Procesando Job ID: {job_id}")
 
     try:
+        # Idempotencia - verificar estado actual
+        cursor.execute("SELECT Estado FROM Jobs WHERE Id = ?", job_id)
+        job_estado = cursor.fetchone()
+
+        if not job_estado:
+            print(f"Job {job_id} no encontrado, ignorando.")
+            continue
+
+        if job_estado.Estado in ("DONE", "RUNNING"):
+            print(f"Job {job_id} ya está en estado {job_estado.Estado}, ignorando.")
+            continue
+
         cursor.execute(
             "UPDATE Jobs SET Estado = 'RUNNING', FechaInicio = GETDATE() WHERE Id = ?",
             job_id

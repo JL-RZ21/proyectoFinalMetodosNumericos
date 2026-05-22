@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using proyectofinal.Data;
 using proyectofinal.Models;
+using proyectofinal.DTOs;
 using StackExchange.Redis;
 
 namespace proyectofinal.Controllers;
@@ -21,10 +22,16 @@ public class JobsController : ControllerBase
 
     // POST: api/Jobs
     [HttpPost]
-    public async Task<ActionResult<Job>> PostJob(Job nuevoJob)
+    public async Task<ActionResult<JobDto>> PostJob(CrearJobDto dto)
     {
-        nuevoJob.Estado = "PENDING";
-        nuevoJob.FechaCreacion = DateTime.Now;
+        var nuevoJob = new Job
+        {
+            Metodo = dto.Metodo,
+            Expresion = dto.Expresion,
+            Parametros = dto.Parametros,
+            Estado = "PENDING",
+            FechaCreacion = DateTime.Now
+        };
 
         _context.Jobs.Add(nuevoJob);
         await _context.SaveChangesAsync();
@@ -32,31 +39,42 @@ public class JobsController : ControllerBase
         var db = _redis.GetDatabase();
         await db.ListRightPushAsync("queue:jobs", nuevoJob.Id.ToString());
 
-        return CreatedAtAction(nameof(GetJob), new { id = nuevoJob.Id }, nuevoJob);
+        return CreatedAtAction(nameof(GetJob), new { id = nuevoJob.Id }, MapJobDto(nuevoJob));
     }
 
-    // GET: api/Jobs — historial completo
+    // GET: api/Jobs
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Job>>> GetJobs()
+    public async Task<ActionResult<IEnumerable<JobDto>>> GetJobs(
+        [FromQuery] string? status,
+        [FromQuery] string? method)
     {
-        var jobs = await _context.Jobs
+        var query = _context.Jobs.AsQueryable();
+
+        if (!string.IsNullOrEmpty(status))
+            query = query.Where(j => j.Estado == status);
+
+        if (!string.IsNullOrEmpty(method))
+            query = query.Where(j => j.Metodo == method);
+
+        var jobs = await query
             .OrderByDescending(j => j.FechaCreacion)
             .ToListAsync();
-        return Ok(jobs);
+
+        return Ok(jobs.Select(MapJobDto));
     }
 
-    // GET: api/Jobs/5 — estado del job
+    // GET: api/Jobs/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Job>> GetJob(int id)
+    public async Task<ActionResult<JobDto>> GetJob(int id)
     {
         var job = await _context.Jobs.FindAsync(id);
         if (job == null) return NotFound();
-        return job;
+        return Ok(MapJobDto(job));
     }
 
-    // GET: api/Jobs/5/iterations — iteraciones para tabla y gráfica
+    // GET: api/Jobs/5/iterations
     [HttpGet("{id}/iterations")]
-    public async Task<ActionResult<IEnumerable<Iteracion>>> GetIteraciones(int id)
+    public async Task<ActionResult<IEnumerable<IteracionDto>>> GetIteraciones(int id)
     {
         var job = await _context.Jobs.FindAsync(id);
         if (job == null) return NotFound();
@@ -66,6 +84,32 @@ public class JobsController : ControllerBase
             .OrderBy(i => i.NumeroIteracion)
             .ToListAsync();
 
-        return Ok(iteraciones);
+        return Ok(iteraciones.Select(i => new IteracionDto
+        {
+            Id = i.Id,
+            JobId = i.JobId,
+            NumeroIteracion = i.NumeroIteracion,
+            ValorX = i.ValorX,
+            Error = i.Error,
+            DatosAdicionales = i.DatosAdicionales
+        }));
     }
+
+    // Método helper para mapear Job a JobDto
+    private static JobDto MapJobDto(Job j) => new JobDto
+    {
+        Id = j.Id,
+        Metodo = j.Metodo,
+        Expresion = j.Expresion,
+        Parametros = j.Parametros,
+        Estado = j.Estado,
+        Resultado = j.Resultado,
+        ErrorFinal = j.ErrorFinal,
+        IteracionesTotal = j.IteracionesTotal,
+        Converged = j.Converged,
+        MensajeError = j.MensajeError,
+        FechaCreacion = j.FechaCreacion,
+        FechaInicio = j.FechaInicio,
+        FechaFinalizacion = j.FechaFinalizacion
+    };
 }
