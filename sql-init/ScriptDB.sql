@@ -1,10 +1,10 @@
--- 1. Crear la base de datos si no existe
+
 CREATE DATABASE MetodosNumericos;
 GO
--- 2. Decirle a SQL que use esa base para lo que sigue
+
 USE MetodosNumericos;
 GO
--- 3. Ahora sí, tus tablas
+
 CREATE TABLE Jobs (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     Metodo NVARCHAR(50) NOT NULL,
