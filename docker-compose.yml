@@ -1,0 +1,61 @@
+services:
+  redis:
+    image: redis:7
+    container_name: metodos-redis
+    ports:
+      - "6379:6379"
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: metodos-sqlserver
+    environment:
+      SA_PASSWORD: "${SQL_PASSWORD}"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+  api:
+    build:
+      context: ./api-dotnet/proyectofinal/proyectofinal
+    container_name: metodos-api
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=MetodosNumericos;User Id=${SQL_USER};Password=${SQL_PASSWORD};TrustServerCertificate=True;"
+      Redis__Connection: "redis:6379"
+    depends_on:
+      - redis
+      - sqlserver
+
+  worker:
+    build:
+      context: ./worker-python
+    container_name: metodos-worker
+    environment:
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
+      REDIS_DB: "${REDIS_DB}"
+      REDIS_QUEUE: "${REDIS_QUEUE}"
+      SQL_SERVER: "sqlserver,1433"
+      SQL_DATABASE: "${SQL_DATABASE}"
+      SQL_USER: "${SQL_USER}"
+      SQL_PASSWORD: "${SQL_PASSWORD}"
+    depends_on:
+      - redis
+      - sqlserver
+
+  frontend:
+    build:
+      context: ./frontEnd
+    container_name: metodos-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+volumes:
+  sqlserver_data:
