@@ -6,7 +6,12 @@ def muller(expresion, parametros):
 
     x = sp.Symbol("x")
     f_expr = sp.sympify(expresion)
+<<<<<<< HEAD
+
+    f = sp.lambdify(x, f_expr, "cmath")
+=======
     f = sp.lambdify(x, f_expr, "complex")
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
 
     x0 = complex(float(parametros["x0"]))
     x1 = complex(float(parametros["x1"]))
@@ -16,7 +21,11 @@ def muller(expresion, parametros):
     max_iteraciones = int(parametros["maxIteraciones"])
 
     iteraciones = []
+<<<<<<< HEAD
+    error_porcentual = None
+=======
     error = None
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
 
     for i in range(1, max_iteraciones + 1):
 
@@ -37,7 +46,10 @@ def muller(expresion, parametros):
         b = a * h1 + d1
         c = fx2
 
+<<<<<<< HEAD
+=======
         # Manejo correcto de raíces complejas con cmath
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
         discriminante = b**2 - 4 * a * c
         raiz_discriminante = cmath.sqrt(discriminante)
 
@@ -51,34 +63,66 @@ def muller(expresion, parametros):
 
         xr = x2 - (2 * c) / denominador
 
+<<<<<<< HEAD
+        diferencia = abs(xr - x2)
+        if abs(xr) > 1e-12:
+            error_relativo = diferencia / abs(xr)
+        else:
+            error_relativo = diferencia
+
+        error_porcentual = error_relativo * 100
+=======
         if abs(xr) > 1e-12:
             error = abs((xr - x2) / xr) * 100
         else:
             error = abs(xr - x2)
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
 
         iteraciones.append({
             "numero": i,
             "valorX": str(xr),
+<<<<<<< HEAD
+            "error": abs(error_porcentual),
+=======
             "error": abs(error),
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
             "datos": {
                 "x0": str(x0),
                 "x1": str(x1),
                 "x2": str(x2),
+<<<<<<< HEAD
+                "xr": str(xr),
+=======
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
                 "fx0": str(fx0),
                 "fx1": str(fx1),
                 "fx2": str(fx2),
                 "a": str(a),
                 "b": str(b),
                 "c": str(c),
+<<<<<<< HEAD
+                "errorRelativo": error_relativo,
+                "errorPorcentual": error_porcentual
+            }
+        })
+
+        if abs(error_porcentual) < tolerancia:
+            return str(xr), abs(error_porcentual), i, True, iteraciones
+=======
                 "xr": str(xr)
             }
         })
 
         if abs(error) < tolerancia:
             return str(xr), abs(error), i, True, iteraciones
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
 
         x0 = x1
         x1 = x2
         x2 = xr
 
+<<<<<<< HEAD
+    return str(x2), abs(error_porcentual), max_iteraciones, False, iteraciones
+=======
     return str(x2), abs(error), max_iteraciones, False, iteraciones
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
