@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 -- 1. Crear la base de datos si no existe
 CREATE DATABASE MetodosNumericos;
 GO
@@ -5,6 +6,15 @@ GO
 USE MetodosNumericos;
 GO
 -- 3. Ahora sí, tus tablas
+=======
+
+CREATE DATABASE MetodosNumericos;
+GO
+
+USE MetodosNumericos;
+GO
+
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
 CREATE TABLE Jobs (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     Metodo NVARCHAR(50) NOT NULL,
@@ -42,4 +52,8 @@ CHECK (Estado IN ('PENDING', 'RUNNING', 'DONE', 'FAILED'));
 CREATE INDEX IX_Jobs_Estado ON Jobs(Estado);
 CREATE INDEX IX_Iteraciones_JobId ON Iteraciones(JobId);
 CREATE INDEX IX_Logs_JobId ON Logs(JobId);
+<<<<<<< HEAD
 GO
+=======
+GO
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9

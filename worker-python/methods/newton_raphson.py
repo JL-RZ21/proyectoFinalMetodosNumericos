@@ -28,6 +28,7 @@ def newton_raphson(expresion, parametros):
         x_nuevo = x_actual - fx / dfx
 
         diferencia = abs(x_nuevo - x_actual)
+
         if abs(x_nuevo) > 1e-12:
             error_relativo = diferencia / abs(x_nuevo)
         else:
