@@ -6,8 +6,17 @@ def muller(expresion, parametros):
 
     x = sp.Symbol("x")
     f_expr = sp.sympify(expresion)
+<<<<<<< HEAD
 
     f = sp.lambdify(x, f_expr, "cmath")
+=======
+<<<<<<< HEAD
+
+    f = sp.lambdify(x, f_expr, "cmath")
+=======
+    f = sp.lambdify(x, f_expr, "complex")
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
+>>>>>>> origin/main
 
     x0 = complex(float(parametros["x0"]))
     x1 = complex(float(parametros["x1"]))
@@ -17,7 +26,15 @@ def muller(expresion, parametros):
     max_iteraciones = int(parametros["maxIteraciones"])
 
     iteraciones = []
+<<<<<<< HEAD
     error_porcentual = None
+=======
+<<<<<<< HEAD
+    error_porcentual = None
+=======
+    error = None
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
+>>>>>>> origin/main
 
     for i in range(1, max_iteraciones + 1):
 
@@ -38,6 +55,13 @@ def muller(expresion, parametros):
         b = a * h1 + d1
         c = fx2
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+        # Manejo correcto de raíces complejas con cmath
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
+>>>>>>> origin/main
         discriminante = b**2 - 4 * a * c
         raiz_discriminante = cmath.sqrt(discriminante)
 
@@ -51,6 +75,10 @@ def muller(expresion, parametros):
 
         xr = x2 - (2 * c) / denominador
 
+<<<<<<< HEAD
+        diferencia = abs(xr - x2)
+=======
+<<<<<<< HEAD
         diferencia = abs(xr - x2)
         if abs(xr) > 1e-12:
             error_relativo = diferencia / abs(xr)
@@ -58,22 +86,51 @@ def muller(expresion, parametros):
             error_relativo = diferencia
 
         error_porcentual = error_relativo * 100
+=======
+>>>>>>> origin/main
+        if abs(xr) > 1e-12:
+            error_relativo = diferencia / abs(xr)
+        else:
+<<<<<<< HEAD
+            error_relativo = diferencia
+
+        error_porcentual = error_relativo * 100
+=======
+            error = abs(xr - x2)
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
+>>>>>>> origin/main
 
         iteraciones.append({
             "numero": i,
             "valorX": str(xr),
+<<<<<<< HEAD
             "error": abs(error_porcentual),
+=======
+<<<<<<< HEAD
+            "error": abs(error_porcentual),
+=======
+            "error": abs(error),
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
+>>>>>>> origin/main
             "datos": {
                 "x0": str(x0),
                 "x1": str(x1),
                 "x2": str(x2),
+<<<<<<< HEAD
                 "xr": str(xr),
+=======
+<<<<<<< HEAD
+                "xr": str(xr),
+=======
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
+>>>>>>> origin/main
                 "fx0": str(fx0),
                 "fx1": str(fx1),
                 "fx2": str(fx2),
                 "a": str(a),
                 "b": str(b),
                 "c": str(c),
+<<<<<<< HEAD
                 "errorRelativo": error_relativo,
                 "errorPorcentual": error_porcentual
             }
@@ -81,9 +138,35 @@ def muller(expresion, parametros):
 
         if abs(error_porcentual) < tolerancia:
             return str(xr), abs(error_porcentual), i, True, iteraciones
+=======
+<<<<<<< HEAD
+                "errorRelativo": error_relativo,
+                "errorPorcentual": error_porcentual
+            }
+        })
+
+        if abs(error_porcentual) < tolerancia:
+            return str(xr), abs(error_porcentual), i, True, iteraciones
+=======
+                "xr": str(xr)
+            }
+        })
+
+        if abs(error) < tolerancia:
+            return str(xr), abs(error), i, True, iteraciones
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
+>>>>>>> origin/main
 
         x0 = x1
         x1 = x2
         x2 = xr
 
+<<<<<<< HEAD
     return str(x2), abs(error_porcentual), max_iteraciones, False, iteraciones
+=======
+<<<<<<< HEAD
+    return str(x2), abs(error_porcentual), max_iteraciones, False, iteraciones
+=======
+    return str(x2), abs(error), max_iteraciones, False, iteraciones
+>>>>>>> 6cbefc402c3995a8b2cba5f69a41aafbaae739f9
+>>>>>>> origin/main
